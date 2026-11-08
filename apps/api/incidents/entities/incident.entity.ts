@@ -1,7 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { IncidentStatus } from "../enums/incident-status.enum.js";
 import { IncidentSeverity } from "../enums/incident-severity.enum.js";
-import { tr } from "zod/locales";
 
 @Entity('incidents')
 export class Incident {
