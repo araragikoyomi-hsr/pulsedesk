@@ -4,6 +4,7 @@ import { AppService } from './app.service.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validateEnv } from './config/env.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { IncidentsModule } from './incidents/incidents.module.js';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         synchronize: false,
         logging: configService.get<string>('NODE_ENV') === 'development'
       })
-    })
+    }),
+    IncidentsModule
   ],
   controllers: [AppController],
   providers: [AppService],

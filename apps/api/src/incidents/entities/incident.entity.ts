@@ -5,23 +5,23 @@ import { IncidentSeverity } from "../enums/incident-severity.enum.js";
 @Entity('incidents')
 export class Incident {
     @PrimaryGeneratedColumn('uuid')
-    id: string
+    id!: string
     @Column({ type: 'varchar', length: 255 })
-    title: string;
+    title!: string;
     @Column({ type: 'text', nullable: true })
     description: string | null;
     @Column({ type: 'enum', enum: IncidentStatus, default: IncidentStatus.OPEN })
-    status: IncidentStatus;
+    status!: IncidentStatus;
     @Column({ type: 'enum', enum: IncidentSeverity, default: IncidentSeverity.MEDIUM })
-    severity: IncidentSeverity;
+    severity!: IncidentSeverity;
     @Column({ type: 'uuid', nullable: true })
     assigneeId: string | null;
     @Column({ type: 'uuid', nullable: true })
     serviceId: string | null;
     @CreateDateColumn({ type: 'timestamptz' })
-    createdAt: Date;
+    createdAt!: Date;
     @UpdateDateColumn({ type: 'timestamptz' })
-    updatedAt: Date;
+    updatedAt!: Date;
     @Column({ type: 'timestamptz', nullable: true })
     resolvedAt: Date | null;
 }
