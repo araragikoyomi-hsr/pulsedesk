@@ -1,0 +1,7 @@
+export enum IncidentStatus {
+    OPEN = 'OPEN',
+    ACKNOWLEDGED = 'ACKNOWLEDGED',
+    INVESTIGATING = 'INVESTIGATING',
+    RESOLVED = 'RESOLVED',
+    CLOSED = 'CLOSED',
+}
