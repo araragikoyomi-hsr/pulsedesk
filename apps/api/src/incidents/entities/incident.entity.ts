@@ -10,7 +10,7 @@ export class Incident {
     title: string;
     @Column({ type: 'text', nullable: true })
     description: string | null;
-    @Column({ type: 'enum', default: IncidentStatus.OPEN })
+    @Column({ type: 'enum', enum: IncidentStatus, default: IncidentStatus.OPEN })
     status: IncidentStatus;
     @Column({ type: 'enum', enum: IncidentSeverity, default: IncidentSeverity.MEDIUM })
     severity: IncidentSeverity;
@@ -23,5 +23,5 @@ export class Incident {
     @UpdateDateColumn({ type: 'timestamptz' })
     updatedAt: Date;
     @Column({ type: 'timestamptz', nullable: true })
-    resolved_at: Date | null;
+    resolvedAt: Date | null;
 }
