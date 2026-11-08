@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Incident } from './entities/incident.entity.js';
 import { Repository } from 'typeorm';
 import { IncidentSeverity } from './enums/incident-severity.enum.js';
+import { CreateIncidentDto } from './dto/create-incident.dto.js';
 
 @Injectable()
 export class IncidentsService {
@@ -16,21 +17,12 @@ export class IncidentsService {
     findOne(id: string) {
         return this.incidentRepository.findOneBy({ id })
     }
-    async create({
-        title,
-        severity,
-        description
-    }: {
-        title: string;
-        severity: IncidentSeverity;
-        description?: string
-    }) {
+    async create(createIncidentDto: CreateIncidentDto) {
         const data = this.incidentRepository.create({
-            title: title,
-            severity: severity,
-            description: description
+            title: createIncidentDto.title,
+            severity: createIncidentDto.severity,
+            description: createIncidentDto.description
         })
         return await this.incidentRepository.save(data)
     }
 }
- 
