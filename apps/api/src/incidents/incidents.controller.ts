@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { IncidentsService } from './incidents.service.js';
 import { CreateIncidentDto } from './dto/create-incident.dto.js';
 import { ApiBody, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Incident } from './entities/incident.entity.js';
+import { UpdateIncidentDto } from './dto/update-incident.dto.js';
 
 @ApiTags('incidents')
 @Controller('incidents')
@@ -27,5 +28,12 @@ export class IncidentsController {
         createIncidentDto: CreateIncidentDto
     ) {
         return await this.incidentsService.create(createIncidentDto)
+    }
+    @Patch(':id')
+    async updateIncident(
+        @Param('id') id: string,
+        @Body() updateIncidentDto: UpdateIncidentDto
+    ) {
+        return await this.incidentsService.update(id, updateIncidentDto)
     }
 }
