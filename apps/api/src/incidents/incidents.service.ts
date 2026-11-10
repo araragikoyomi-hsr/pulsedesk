@@ -1,16 +1,21 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Incident } from './entities/incident.entity.js';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateIncidentDto } from './dto/create-incident.dto.js';
 import { isValidUUID } from '../config/utils.js';
 import { UpdateIncidentDto } from './dto/update-incident.dto.js';
+import { IncidentEvent } from './entities/incident-event.entity.js';
+import { IncidentEventType } from './enums/incident-event-type.enum.js';
 
 @Injectable()
 export class IncidentsService {
     constructor(
         @InjectRepository(Incident)
-        private readonly incidentRepository: Repository<Incident>
+        private readonly incidentRepository: Repository<Incident>,
+        private readonly dataSource: DataSource,
+        @InjectRepository(IncidentEvent)
+        private readonly incidentEventRepository: Repository<IncidentEvent>
     ) { }
     findAll() {
         return this.incidentRepository.find()
@@ -30,12 +35,23 @@ export class IncidentsService {
 
     }
     async create(createIncidentDto: CreateIncidentDto) {
-        const data = this.incidentRepository.create({
-            title: createIncidentDto.title,
-            severity: createIncidentDto.severity,
-            description: createIncidentDto.description
+        return this.dataSource.transaction(async (manager) => {
+            const data = manager.getRepository(Incident).create({
+                title: createIncidentDto.title,
+                severity: createIncidentDto.severity,
+                description: createIncidentDto.description
+            })
+
+            const savedIncident = await manager.getRepository(Incident).save(data)
+
+            const eventData = manager.getRepository(IncidentEvent).create({
+                eventType: IncidentEventType.CREATED,
+                incident: { id: savedIncident.id },
+            })
+
+            await manager.getRepository(IncidentEvent).save(eventData)
+            return savedIncident;
         })
-        return await this.incidentRepository.save(data)
     }
 
     async update(id: string, updateIncidentDto: UpdateIncidentDto) {

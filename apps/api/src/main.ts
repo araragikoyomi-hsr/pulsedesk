@@ -16,6 +16,7 @@ async function bootstrap() {
   const doc = new DocumentBuilder().setTitle('PulseDesk Api').setDescription('Bruh').setVersion('1.0').build();
   const document = SwaggerModule.createDocument(app, doc);
   SwaggerModule.setup('api/docs', app, document)
+  app.enableCors()
   await app.listen(config.get('PORT', { infer: true }));
 }
 await bootstrap();
