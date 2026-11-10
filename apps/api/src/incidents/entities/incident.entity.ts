@@ -3,12 +3,15 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
+    type Relation
 } from 'typeorm';
 
 import { IncidentStatus } from '../enums/incident-status.enum.js';
 import { IncidentSeverity } from '../enums/incident-severity.enum.js';
+import { IncidentEvent } from './incident-event.entity.js';
 
 @Entity('incidents')
 export class Incident {
@@ -54,4 +57,7 @@ export class Incident {
     @ApiProperty({ example: null, nullable: true })
     @Column({ type: 'timestamptz', nullable: true })
     resolvedAt: Date | null;
+
+    @OneToMany(() => IncidentEvent, (incidentEvent) => incidentEvent.incident)
+    events!: Relation<IncidentEvent[]>
 }

@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { Incident } from '../incidents/entities/incident.entity.js';
 import { config } from 'dotenv';
+import { IncidentEvent } from '../incidents/entities/incident-event.entity.js';
 
 config({ path: '../../.env' });
 
@@ -14,7 +15,7 @@ if (!databaseUrl) {
 export default new DataSource({
     type: 'postgres',
     url: databaseUrl,
-    entities: [Incident],
+    entities: [Incident, IncidentEvent],
     migrations: ['src/database/migrations/*{.ts,.js}'],
     synchronize: false,
 });
