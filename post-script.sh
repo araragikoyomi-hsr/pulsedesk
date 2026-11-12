@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 API_URL="${API_URL:-http://localhost:4000/incidents}"
-TOTAL="${TOTAL:-10000}"
-CONCURRENCY="${CONCURRENCY:-20}"
+TOTAL="${TOTAL:-25000}"
+CONCURRENCY="${CONCURRENCY:-50}"
 DELAY="${DELAY:-0}"
 PROGRESS_EVERY="${PROGRESS_EVERY:-100}"
 
