@@ -18,7 +18,11 @@ export class IncidentsService {
         private readonly incidentEventRepository: Repository<IncidentEvent>
     ) { }
     findAll() {
-        return this.incidentRepository.find()
+        return this.incidentRepository.find({
+            take: 25,
+            skip: 0,
+            order: { createdAt: 'DESC' }
+        })
     }
     async findOne(id: string) {
         if (isValidUUID(id)) {
@@ -55,20 +59,44 @@ export class IncidentsService {
     }
 
     async update(id: string, updateIncidentDto: UpdateIncidentDto) {
-        if (isValidUUID(id)) {
-            if (Object.keys(updateIncidentDto).length === 0) {
-                throw new BadRequestException('At least one field is required');
-            }
-            const data = await this.incidentRepository.findOneBy({ id })
-            if (data) {
-                const savedData = this.incidentRepository.merge(data, updateIncidentDto)
-                return this.incidentRepository.save(savedData)
-            } else {
-                throw new NotFoundException('Incident with given id not found')
-            }
-        } else {
-            throw new BadRequestException('Invalid Uuid bro')
+        if (!isValidUUID(id)) {
+            throw new BadRequestException('Invalid UUID');
         }
 
+        if (Object.keys(updateIncidentDto).length === 0) {
+            throw new BadRequestException('At least one field is required');
+        }
+
+        return this.dataSource.transaction(async (manager) => {
+            const incidentRepo = manager.getRepository(Incident);
+
+            const data = await incidentRepo.findOneBy({ id });
+
+            if (!data) {
+                throw new NotFoundException('Incident with given id not found');
+            }
+
+            const previousStatus = data.status
+
+            const savedData = await incidentRepo.save(incidentRepo.merge(data, updateIncidentDto));
+
+            if (updateIncidentDto.status && updateIncidentDto.status !== previousStatus) {
+                const eventRepo = manager.getRepository(IncidentEvent)
+
+                const event = eventRepo.create({
+                    eventType: IncidentEventType.STATUS_CHANGED,
+                    incident: { id: savedData.id },
+                    details: {
+                        from: previousStatus,
+                        to: savedData.status
+                    }
+                })
+
+                await eventRepo.save(event)
+            }
+
+
+            return savedData;
+        });
     }
 }
